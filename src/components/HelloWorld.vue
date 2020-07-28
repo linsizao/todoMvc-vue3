@@ -65,8 +65,7 @@
 
 <script>
 import { reactive, toRefs, computed, watch } from 'vue'
-import todoStorage from "../utils/storage"
-import filters from "../utils/filters"
+import { todoStorage, todoFilters } from '../utils'
 
 export default {
   name: 'Todo',
@@ -112,7 +111,7 @@ export default {
     })
 
     // 计算属性-过滤列表
-    const filteredTodos = computed(() => filters[state.visibility](state.todos))
+    const filteredTodos = computed(() => todoFilters[state.visibility](state.todos))
 
     // 添加
     function addTodo () {
