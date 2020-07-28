@@ -73,14 +73,14 @@ export default {
 
   setup() {
     const STORAGE_KEY = 'todos-vuejs'
+    const defaultArr = [
+      { id: 1, title: '吃饭', completed: false },
+      { id: 2, title: '睡觉', completed: false },
+      { id: 3, title: '打豆豆', completed: false },
+    ]
     const state = reactive({
       newTodo: '',
-      todos: todoStorage.fetch(STORAGE_KEY,[]),
-      defaultArr: [
-        { id: 1, title: '吃饭', completed: false },
-        { id: 2, title: '睡觉', completed: false },
-        { id: 3, title: '打豆豆', completed: false },
-      ],
+      todos: todoStorage.fetch(STORAGE_KEY, defaultArr),
       btns: [
         { label: 'All', value: 'all' },
         { label: 'Active', value: 'active' },
