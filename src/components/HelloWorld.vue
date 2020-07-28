@@ -1,7 +1,7 @@
 <template>
   <section class="todoapp">
     <header class="header">
-      <h1>Little Todo</h1>
+      <h1>todoMvc-vue3</h1>
       <input
         class="new-todo"
         placeholder="What do you want to do"
@@ -10,15 +10,15 @@
       >
     </header>
 
-    <section id="toggle-all" class="main" v-show="todos.length" >
-      <input class="toggle-all" type="checkbox" v-model="allDone">
+    <section class="main" v-show="todos.length" >
+      <input id="toggle-all" class="toggle-all" type="checkbox" v-model="allDone">
       <label for="toggle-all">Mark all as complete</label>
       <ul class="todo-list">
         <li
           v-for="todo in filteredTodos"
           :key="todo.id"
           class="todo"
-          :class="todo==editedTodo?'editing':''"
+          :class="[todo==editedTodo?'editing':'',todo.completed?'completed':'']"
         >
           <div class="view">
             <input class="toggle" type="checkbox" v-model="todo.completed">
@@ -36,7 +36,6 @@
         </li>
       </ul>
     </section>
-
 
     <footer class="footer" v-show="todos.length" v-cloak>
       <span class="todo-count">
@@ -65,15 +64,19 @@
 </template>
 
 <script>
-import { reactive, toRefs, computed } from "vue";
+import { reactive, toRefs, computed, watch } from 'vue'
+import todoStorage from "../utils/storage"
+import filters from "../utils/filters"
 
 export default {
   name: 'Todo',
 
   setup() {
+    const STORAGE_KEY = 'todos-vuejs'
     const state = reactive({
       newTodo: '',
-      todos: [
+      todos: todoStorage.fetch(STORAGE_KEY,[]),
+      defaultArr: [
         { id: 1, title: '吃饭', completed: false },
         { id: 2, title: '睡觉', completed: false },
         { id: 3, title: '打豆豆', completed: false },
@@ -88,42 +91,28 @@ export default {
       visibility: 'all'
     })
 
-
-	const filters = {
-		all: function (todos) {
-			return todos
-		},
-		active: function (todos) {
-			return todos.filter(function (todo) {
-				return !todo.completed
-			})
-		},
-		completed: function (todos) {
-			return todos.filter(function (todo) {
-				return todo.completed
-			})
-		}
-	}
-
-    const remaining = computed(
-      () => state.todos.filter(todo => !todo.completed).length
+    watch(() =>state.todos,
+      (count) => { todoStorage.save(STORAGE_KEY, count) },
+      { deep: true }
     )
 
+    // 计算属性-未完成数量
+    const remaining = computed(() => state.todos.filter(todo => !todo.completed).length)
+
+    // 计算属性-全选
     const allDone = computed({
       get: function() {
-        return remaining.value === 0;
+        return remaining.value === 0
       },
       set: function(value) {
         state.todos.forEach(function(todo) {
-          todo.completed = value;
+          todo.completed = value
         })
       }
     })
 
+    // 计算属性-过滤列表
     const filteredTodos = computed(() => filters[state.visibility](state.todos))
-    // const filteredTodos = computed(() =>  {
-    //   return filters[state.visibility](state.todos)
-    // })
 
     // 添加
     function addTodo () {
@@ -141,7 +130,7 @@ export default {
       state.newTodo = ""
     }
 
-    // 删除
+    // 单个移除
     function removeTodo(todo) {
       const index = state.todos.indexOf(todo)
       state.todos.splice(index, 1)
@@ -165,6 +154,7 @@ export default {
       }
     }
 
+    // 移除已完成
     function removeCompleted() {
       state.todos = state.todos.filter(todo => !todo.completed)
     }
@@ -180,7 +170,6 @@ export default {
       doneEdit,
       removeCompleted
     }
-
   },
 
   directives: {
