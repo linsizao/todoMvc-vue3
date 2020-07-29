@@ -14,10 +14,3 @@ npm install
 ```
 npm run dev
 ```
-
-## 打包
-
-```
-// "node": ">= 10.16.0"
-npm run build
-```
