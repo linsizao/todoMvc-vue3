@@ -111,7 +111,11 @@ export default {
     })
 
     // 计算属性-过滤列表
-    const filteredTodos = computed(() => todoFilters[state.visibility](state.todos))
+    // const filteredTodos = computed(() => todoFilters[state.visibility](state.todos))
+    const filteredTodos = computed(() => {
+      console.log("!!!!!!!!!")
+      return todoFilters[state.visibility](state.todos)
+    })
 
     // 添加
     function addTodo () {
